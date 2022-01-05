@@ -1,15 +1,21 @@
 package com.example.todo.application.port.`in`
 
-import org.springframework.util.Assert
+import com.example.todo.adapter.`in`.request.TodoUpdateReq
 
 class UpdateTodoCommand(
 	val todoId: Long,
 	val name: String,
 	val isComplete: Boolean?
 ) {
+	init {
+		require(isComplete != null) { throw IllegalArgumentException("Register Todo's complete state is not null") }
+	}
+
 	companion object {
-		fun validMethodCall(isCompleteCommand: Boolean?, isCompleteMethod: Boolean?) {
-			Assert.isTrue(isCompleteCommand == isCompleteMethod, "U Call isCompleteMethod : $isCompleteMethod Method With isCompleteCommand : $isCompleteCommand")
+		fun of(id: Long, todoUpdateReq: TodoUpdateReq): UpdateTodoCommand {
+			return with(todoUpdateReq) {
+				UpdateTodoCommand(todoId = id, name, completed)
+			}
 		}
 	}
 }

@@ -1,7 +1,7 @@
 package com.example.todo.application.port.`in`
 
-import com.example.todo.domain.Todo
+import com.example.todo.adapter.out.presenter.TodoRes
 
 interface GetTodoListQuery {
-	fun getTodoList(): List<Todo>
+	fun getTodoList(): List<TodoRes>
 }

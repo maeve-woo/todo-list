@@ -23,7 +23,7 @@ class FindTodoServiceTest @Autowired constructor(
 		val todos = todoRepository.findAll()
 		val todo = todos[0]
 
-		val findTodo = findTodoService.find(todo.id!!)
-		assertThat(findTodo.name).isEqualTo("Hello")
+		val todoRes = findTodoService.find(todo.id!!)
+		assertThat(todoRes.name).isEqualTo("Hello")
 	}
 }
