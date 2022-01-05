@@ -5,6 +5,7 @@ import com.example.todo.adapter.`in`.request.TodoUpdateReq
 import com.example.todo.adapter.out.presenter.TodoRes
 import com.example.todo.application.port.`in`.*
 import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 
 @RestController
 @RequestMapping("/todos")
@@ -26,12 +27,12 @@ class TodoController(
 	}
 
 	@PostMapping
-	fun registerTodo(@RequestBody req: TodoRegisterReq) {
+	fun registerTodo(@RequestBody @Valid req: TodoRegisterReq) {
 		registerTodoUseCase.registerTodo(RegisterTodoCommand.of(req))
 	}
 
 	@PutMapping("/{todoId}")
-	fun updateTodo(@RequestBody req: TodoUpdateReq, @PathVariable todoId: Long) {
+	fun updateTodo(@RequestBody @Valid req: TodoUpdateReq, @PathVariable todoId: Long) {
 		updateTodoUseCase.updateTodo(UpdateTodoCommand.of(todoId, req))
 	}
 

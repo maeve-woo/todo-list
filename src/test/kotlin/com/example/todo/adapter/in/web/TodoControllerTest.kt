@@ -8,7 +8,6 @@ import com.example.todo.application.port.`in`.*
 import com.example.todo.application.service.RegisterTodoService
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,7 +25,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
 import org.springframework.web.filter.CharacterEncodingFilter
-import org.springframework.web.util.NestedServletException
 
 @SpringBootTest
 @Transactional
@@ -111,9 +109,8 @@ class TodoControllerTest @Autowired constructor(
 	fun `todo 등록 실패 - Req Validation`() {
 		val req = objectMapper.writeValueAsString(TodoRegisterReq("Hello", true))
 
-		assertThatThrownBy {
-			mockMvc.perform(post("/todos").contentType(MediaType.APPLICATION_JSON).content(req))
-		}.isInstanceOf(NestedServletException::class.java)
+		mockMvc.perform(post("/todos").contentType(MediaType.APPLICATION_JSON).content(req))
+			.andExpect(status().isBadRequest)
 	}
 
 	@Test
