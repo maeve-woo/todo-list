@@ -14,7 +14,7 @@ class CompleteTodoService(
 	override fun completeTodo(command: UpdateTodoCommand) {
 		val todo = loadTodoPort.loadTodo(command.todoId)
 
-		Validation.validCommand(todo, command, true)
+		Validation.validUpdateCommand(todo, command, true)
 
 		todo.complete()
 	}

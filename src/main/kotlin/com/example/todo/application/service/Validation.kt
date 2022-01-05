@@ -5,7 +5,7 @@ import com.example.todo.domain.Todo
 
 class Validation {
 	companion object {
-		fun validCommand(todo: Todo, command: UpdateTodoCommand, isCompleteMethod: Boolean?) {
+		fun validUpdateCommand(todo: Todo, command: UpdateTodoCommand, isCompleteMethod: Boolean?) {
 			if (todo.name != command.name) {
 				throw MissMatchNameException(todo.id!!, command.name, todo.name)
 			}
