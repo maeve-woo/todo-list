@@ -1,6 +1,8 @@
 package com.example.todo.application.service
 
+import com.example.todo.adapter.out.persistence.SpringDataTodoRepository
 import com.example.todo.application.port.`in`.RegisterTodoCommand
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -9,17 +11,19 @@ import javax.transaction.Transactional
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Transactional
-internal class GetTodoListServiceTest @Autowired constructor(
+class FindTodoServiceTest @Autowired constructor(
+	val todoRepository: SpringDataTodoRepository,
 	val registerTodoService: RegisterTodoService,
-	val getTodoListService: GetTodoListService
+	val findTodoService: FindTodoService
 ) {
 	@Test
-	fun `todos 조회`() {
-		registerTodoService.registerTodo(RegisterTodoCommand("Hello1", null))
-		registerTodoService.registerTodo(RegisterTodoCommand("Hello2", null))
-		registerTodoService.registerTodo(RegisterTodoCommand("Hello3", null))
+	fun `todo regist 성공`() {
+		registerTodoService.registerTodo(RegisterTodoCommand("Hello", null))
 
-		val todos = getTodoListService.getTodoList()
-		assertThat(todos.size).isEqualTo(3)
+		val todos = todoRepository.findAll()
+		val todo = todos[0]
+
+		val findTodo = findTodoService.find(todo.id!!)
+		assertThat(findTodo.name).isEqualTo("Hello")
 	}
 }
