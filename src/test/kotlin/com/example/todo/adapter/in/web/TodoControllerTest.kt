@@ -28,12 +28,7 @@ import org.springframework.web.filter.CharacterEncodingFilter
 @AutoConfigureMockMvc
 class TodoControllerTest @Autowired constructor(
 	val todoRepository: SpringDataTodoRepository,
-	val registerTodoService: RegisterTodoService,
-	val registerTodoUseCase: RegisterTodoUseCase,
-	val updateTodoUseCase: UpdateTodoUseCase,
-	val removeTodoUseCase: RemoveTodoUseCase,
-	val findTodoUseCase: FindTodoUseCase,
-	val getTodoList: GetTodoListQuery
+	val registerTodoService: RegisterTodoService
 ) {
 	@Autowired
 	lateinit var mockMvc: MockMvc
