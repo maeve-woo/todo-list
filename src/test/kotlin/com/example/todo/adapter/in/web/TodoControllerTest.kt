@@ -15,11 +15,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
+import org.springframework.test.web.servlet.*
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
@@ -59,10 +56,12 @@ class TodoControllerTest @Autowired constructor(
 	@Test
 	fun `todos 조회`() {
 		prepareTodos()
-		val todosRes = mockMvc.perform(get("/todos").contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk)
-			.andExpect(jsonPath("$.length()").value(3))
-			.andReturn()
+		val todosRes = mockMvc.get("/todos") {
+			accept = MediaType.APPLICATION_JSON
+		}.andExpect {
+			status { isOk() }
+			jsonPath("$.length()") { value(3) }
+		}.andReturn()
 
 		val todos = objectMapper.readValue(todosRes.response.contentAsString, List::class.java)
 		assertThat(todos).extracting("name")
@@ -75,14 +74,16 @@ class TodoControllerTest @Autowired constructor(
 		val todo = todoRepository.findAll().first()
 		val todoId = todo.id
 
-		mockMvc.perform(get("/todos/$todoId").contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk)
-			.andExpect(jsonPath("$.id").value(todoId))
-			.andExpect(jsonPath("$.name").value(todo.name))
-			.andExpect(jsonPath("$.completed").value(todo.isCompleted))
-			.andExpect(jsonPath("$.createdAt").value(todo.createdAt.toFormatted()))
-			.andExpect(jsonPath("$.completedAt").value(todo.completedAt?.toFormatted()))
-			.andExpect(jsonPath("$.updatedAt").value(todo.updatedAt.toFormatted()))
+		mockMvc.get("/todos/$todoId") {
+			contentType = MediaType.APPLICATION_JSON
+		}.andExpect {
+			status { isOk() }
+			jsonPath("$.id") { value(todo.id) }
+			jsonPath("$.name") { value(todo.name) }
+			jsonPath("$.createdAt") { value(todo.createdAt.toFormatted()) }
+			jsonPath("$.completedAt") { value(todo.completedAt?.toFormatted()) }
+			jsonPath("$.updatedAt") { value(todo.updatedAt.toFormatted()) }
+		}
 	}
 
 	@Test
@@ -92,8 +93,10 @@ class TodoControllerTest @Autowired constructor(
 
 		val req = objectMapper.writeValueAsString(TodoRegisterReq("Hello", null))
 
-		mockMvc.perform(post("/todos").contentType(MediaType.APPLICATION_JSON).content(req))
-			.andExpect(status().isOk)
+		mockMvc.post("/todos") {
+			contentType = MediaType.APPLICATION_JSON
+			content = req
+		}.andExpect { status { isOk() } }
 
 		val afterTodos = todoRepository.findAll()
 		val todo = afterTodos[0]
@@ -109,8 +112,10 @@ class TodoControllerTest @Autowired constructor(
 	fun `todo 등록 실패 - Req Validation`() {
 		val req = objectMapper.writeValueAsString(TodoRegisterReq("Hello", true))
 
-		mockMvc.perform(post("/todos").contentType(MediaType.APPLICATION_JSON).content(req))
-			.andExpect(status().isBadRequest)
+		mockMvc.post("/todos") {
+			contentType = MediaType.APPLICATION_JSON
+			content = req
+		}.andExpect { status { isBadRequest() } }
 	}
 
 	@Test
@@ -120,8 +125,10 @@ class TodoControllerTest @Autowired constructor(
 		val todoId = todo.id
 		val req = objectMapper.writeValueAsString(TodoUpdateReq(todo.name, true))
 
-		mockMvc.perform(put("/todos/$todoId").contentType(MediaType.APPLICATION_JSON).content(req))
-			.andExpect(status().isOk)
+		mockMvc.put("/todos/$todoId") {
+			contentType = MediaType.APPLICATION_JSON
+			content = req
+		}.andExpect { status { isOk() } }
 
 		todo = todoRepository.findAll().first()
 
@@ -131,6 +138,7 @@ class TodoControllerTest @Autowired constructor(
 		assertThat(todo.updatedAt).isNotNull
 	}
 
+
 	@Test
 	fun `todo 완료실패`() {
 		prepareTodos()
@@ -138,9 +146,12 @@ class TodoControllerTest @Autowired constructor(
 		val todoId = todo.id
 		val req = objectMapper.writeValueAsString(TodoUpdateReq(todo.name, false))
 
-		mockMvc.perform(put("/todos/$todoId").contentType(MediaType.APPLICATION_JSON).content(req))
-			.andExpect(status().isOk)
-
+		mockMvc.put("/todos/$todoId") {
+			contentType = MediaType.APPLICATION_JSON
+			content = req
+		}.andExpect {
+			status { isOk() }
+		}
 		todo = todoRepository.findAll().first()
 
 		assertThat(todo.isCompleted).isFalse
@@ -154,8 +165,9 @@ class TodoControllerTest @Autowired constructor(
 		prepareTodos()
 		val todoId = todoRepository.findAll().first().id
 
-		mockMvc.perform(delete("/todos/$todoId").contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk)
+		mockMvc.delete("/todos/$todoId") {
+			contentType = MediaType.APPLICATION_JSON
+		}.andExpect { status { isOk() } }
 
 		assertThat(todoRepository.findByIdOrNull(todoId)).isNull()
 	}
