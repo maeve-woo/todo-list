@@ -2,16 +2,16 @@ package com.example.todo.application.service
 
 import com.example.todo.adapter.out.persistence.SpringDataTodoRepository
 import com.example.todo.application.port.`in`.RegisterTodoCommand
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.TestConstructor
 import javax.transaction.Transactional
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Transactional
-class FindTodoServiceTest @Autowired constructor(
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+class FindTodoServiceTest(
 	val todoRepository: SpringDataTodoRepository,
 	val registerTodoService: RegisterTodoService,
 	val findTodoService: FindTodoService
